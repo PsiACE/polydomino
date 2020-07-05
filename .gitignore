@@ -18,5 +18,8 @@ build/
 .vscode/
 
 dataset/*/
+polydomino/static/dataset/*/
+
+*.csv
 
 .tox
