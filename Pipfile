@@ -9,6 +9,11 @@ bump2version = "*"
 
 [packages]
 polydomino = {path = ".",editable = true}
+numpy = "*"
+opencv-python = "*"
+imutils = "*"
+flask = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
