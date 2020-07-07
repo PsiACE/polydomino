@@ -30,6 +30,11 @@ Since the project is not yet perfect, here is only an overview of the process ra
 3. Index pictures.
 4. Select pictures to search.
 
+## Features
+
+Feature extraction algorithms include: 3D-HSV Histogram, Color Moment, Gray Matrix, DHash, Hu Moment.
+Search algorithm based on statistical method: Euclidean Distance, Manhattan Distance, Hamming Distance, Cosine Similarity, Pearson Similarity, Spearman Similarity.
+
 ## Contact
 
 Chojan Shang - [@PsiACE](https://github.com/psiace) - <psiace@outlook.com>
