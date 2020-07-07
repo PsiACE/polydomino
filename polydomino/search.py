@@ -51,7 +51,6 @@ cv2.namedWindow("Query", 0)
 cv2.resizeWindow("Query", 640, 480)
 cv2.imshow("Query", query)
 # loop over the results
-ans = []
 for (score, resultID) in results:
     result = cv2.imread(resultID)
     cv2.imshow("Result", result)

@@ -105,7 +105,3 @@ class Searcher:
     def jaccard_similarity(self, x, y):
         matV = np.mat([x, y])
         return dist.pdist(matV, "jaccard")[0]
-
-
-def bit_product_sum(x, y):
-    return sum([item[0] * item[1] for item in zip(x, y)])

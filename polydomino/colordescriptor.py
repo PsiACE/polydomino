@@ -143,7 +143,6 @@ class ColorDescriptor:
         # (row, col) = img_gray.shape
         # m00 = img_gray.sum()
         # m10 = m01 = 0
-        # #　计算图像的二阶、三阶几何矩
         # m11 = m20 = m02 = m12 = m21 = m30 = m03 = 0
         # for i in range(row):
         #     m10 += (i * img_gray[i]).sum()
