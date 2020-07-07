@@ -1,16 +1,14 @@
 import os
 import sys
+import time
+from datetime import timedelta
 
-from flask import Flask, render_template, request, jsonify
+import cv2
+from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 
 from colordescriptor import ColorDescriptor
 from searcher import Searcher
-
-import time
-import cv2
-
-from datetime import timedelta
 
 # 设置允许的文件格式
 ALLOWED_EXTENSIONS = set(["png", "jpg", "JPG", "PNG", "bmp"])
@@ -51,7 +49,7 @@ def search():
 
             image_url = "polydomino/" + image_url[1:]
             query = cv2.imread(image_url)
-            features = cd.describe(query)
+            features = cd.hsv_describe(query)
 
             # perform the search
             searcher = Searcher(INDEX)

@@ -1,8 +1,10 @@
 # import the necessary packages
-from polydomino.colordescriptor import ColorDescriptor
 import argparse
 import glob
+
 import cv2
+
+from polydomino.colordescriptor import ColorDescriptor
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -18,6 +20,9 @@ ap.add_argument(
     required=True,
     help="Path to where the computed index will be stored",
 )
+ap.add_argument(
+    "-m", "--method", required=True, help="Method to get features of pics",
+)
 args = vars(ap.parse_args())
 # initialize the color descriptor
 cd = ColorDescriptor((8, 12, 3))
@@ -31,7 +36,19 @@ for imagePath in glob.glob(args["dataset"] + "/*.jpg"):
     imageID = imagePath
     image = cv2.imread(imagePath)
     # describe the image
-    features = cd.describe(image)
+    if args["method"] == "color-moments":
+        features = cd.color_moments(image)
+    elif args["method"] == "hsv-describe":
+        features = cd.hsv_describe(image)
+    elif args["method"] == "gray-matrix":
+        features = cd.gray_matrix(image)
+    elif args["method"] == "humoments":
+        features = cd.humoments(image)
+    elif args["method"] == "dhash":
+        features = cd.dhash(image)
+    else:
+        print("Sorry, we don't support this method.")
+        exit(1)
     # write the features to file
     features = [str(f) for f in features]
     output.write("%s,%s\n" % (imageID, ",".join(features)))

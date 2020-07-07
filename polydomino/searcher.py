@@ -1,6 +1,10 @@
 # import the necessary packages
-import numpy as np
 import csv
+import math
+
+import numpy as np
+import scipy.spatial.distance as dist
+from scipy.stats import kendalltau, pearsonr, spearmanr
 
 
 class Searcher:
@@ -8,7 +12,7 @@ class Searcher:
         # store our index path
         self.indexPath = indexPath
 
-    def search(self, queryFeatures, limit=10):
+    def search(self, queryFeatures, method, limit=10):
         # initialize our dictionary of results
         results = {}
         # open the index file for reading
@@ -21,7 +25,28 @@ class Searcher:
                 # chi-squared distance between the features in our index
                 # and our query features
                 features = [float(x) for x in row[1:]]
-                d = self.chi2_distance(features, queryFeatures)
+                if method == "chi2":
+                    d = self.chi2_distance(features, queryFeatures)
+                elif method == "euclidean":
+                    d = self.euclidean_distance(features, queryFeatures)
+                elif method == "manhattan":
+                    d = self.manhattan_distance(features, queryFeatures)
+                elif method == "chebyshev":
+                    d = self.chebyshev_distance(features, queryFeatures)
+                elif method == "hamming":
+                    d = self.hamming_distance(features, queryFeatures)
+                elif method == "cosine":
+                    d = self.cosine_similarity(features, queryFeatures)
+                elif method == "pearson":
+                    d = self.pearson_similarity(features, queryFeatures)
+                elif method == "spearman":
+                    d = self.spearman_similarity(features, queryFeatures)
+                elif method == "jaccard":
+                    d = self.jaccard_similarity(features, queryFeatures)
+                else:
+                    print("Sorry, we don't support this method.")
+                    exit(1)
+
                 # now that we have the distance between the two feature
                 # vectors, we can udpate the results dictionary -- the
                 # key is the current image ID in the index and the
@@ -34,6 +59,8 @@ class Searcher:
         # more relevant images are at the front of the list)
         results = sorted([(v, k) for (k, v) in results.items()])
         # return our (limited) results
+        if method == "pearson" or method == "cosine" or method == "spearman":
+            results.sort(reverse=True)
         return results[:limit]
 
     def chi2_distance(self, histA, histB, eps=1e-10):
@@ -43,3 +70,42 @@ class Searcher:
         )
         # return the chi-squared distance
         return d
+
+    def euclidean_distance(self, histA, histB):
+        d = np.sum([(a - b) ** 2 for (a, b) in zip(histA, histB)]) ** 0.5
+        return d
+
+    def manhattan_distance(self, histA, histB):
+        d = np.sum(np.abs(a - b) for (a, b) in zip(histA, histB))
+        return d
+
+    def chebyshev_distance(self, vec1, vec2):
+        npvec1, npvec2 = np.array(vec1), np.array(vec2)
+        return max(np.abs(npvec1 - npvec2))
+
+    def hamming_distance(self, inA, inB):
+        d = 0
+        for i in range(len(inA)):
+            if inA[i] != inB[i]:
+                d += 1
+        return d
+
+    def cosine_similarity(self, x, y, norm=False):
+        return np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
+
+    def pearson_similarity(self, x, y):
+        # x_=x-np.mean(x)
+        # y_=y-np.mean(y)
+        # d=np.dot(x_,y_)/(np.linalg.norm(x_)*np.linalg.norm(y_))
+        return pearsonr(x, y)[0]
+
+    def spearman_similarity(self, x, y):
+        return spearmanr(x, y)[0]
+
+    def jaccard_similarity(self, x, y):
+        matV = np.mat([x, y])
+        return dist.pdist(matV, "jaccard")[0]
+
+
+def bit_product_sum(x, y):
+    return sum([item[0] * item[1] for item in zip(x, y)])
