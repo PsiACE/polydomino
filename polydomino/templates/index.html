@@ -1,46 +1,16 @@
-{% extends "base.html" %}
- 
-{% block content %}
- 
-<div class="row">
- 
-  <div class="col-md-7">
-    <h2>Select an Image</h2>
-    <br>
-    <div class="row">
-      <div class="col-md-6">
-        <p><img src="{{ url_for('static', filename='queries/103100.jpg') }}" style="height: 250px;" class="img"></p>
-        <p><img src="{{ url_for('static', filename='queries/103300.jpg') }}" style="height: 250px;" class="img"></p>
-      </div>
-      <div class="col-md-6">
-        <p><img src="{{ url_for('static', filename='queries/108100.jpg') }}" style="height: 250px;" class="img"></p>
-        <p><img src="{{ url_for('static', filename='queries/123600.jpg') }}" style="height: 250px;" class="img"></p>
-      </div>
-    </div>
-  </div>
-
- 
-  <div class="col-md-3 col-md-offset-1">
-    <h2>Results</h2>
-    <br>
-    <p id="searching">Searching...</p>
-    <p id="error">Oh no! No results! Check your internet connection.</p>
-    <table class="table" id="results-table">
-      <thead>
-        <tr>
-          <th>Image</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody id="results">
-      </tbody>
-    </table>
-  </div>
- 
-</div>
-
-
- 
-<br>
- 
+{% extends 'base.html' %} {% block header %}
+<br />
+<br />
+<br />
+<h1>{% block title %} Poly Domino {% endblock %} </h1>
+<br />
+<p>A simple <i><u>application skeleton</u></i> for the so-called <mark><b>CBIR</b></mark> projects.</p>
+<p>Retrieve pictures the way you want & Meet a surprising result.</p>
+<br />
+<p><a href="/demo"><i>Run the Demo</i></a><a href="/query"><b>Query a Picture&rarr;</b></a></p>
+<br />
+<br />
+<br />
+<br />
+<br />
 {% endblock %}
