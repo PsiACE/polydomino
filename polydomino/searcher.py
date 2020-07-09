@@ -43,6 +43,8 @@ class Searcher:
                     d = self.spearman_similarity(features, queryFeatures)
                 elif method == "jaccard":
                     d = self.jaccard_similarity(features, queryFeatures)
+                elif method == "mse":
+                    d = self.mse_similarity(features, queryFeatures)
                 else:
                     print("Sorry, we don't support this method.")
                     exit(1)
@@ -58,9 +60,14 @@ class Searcher:
         # sort our results, so that the smaller distances (i.e. the
         # more relevant images are at the front of the list)
         results = sorted([(v, k) for (k, v) in results.items()])
-        # return our (limited) results
-        if method == "pearson" or method == "cosine" or method == "spearman":
+        if (
+            method == "pearson"
+            or method == "cosine"
+            or method == "spearman"
+            or method == "mse"
+        ):
             results.sort(reverse=True)
+        # return our (limited) results
         return results[:limit]
 
     def chi2_distance(self, histA, histB, eps=1e-10):
@@ -105,3 +112,13 @@ class Searcher:
     def jaccard_similarity(self, x, y):
         matV = np.mat([x, y])
         return dist.pdist(matV, "jaccard")[0]
+
+    def mse_similarity(self, line_MSEs1, line_MSEs2, Confident=0.8):
+        Diff_value = np.abs(np.array(line_MSEs1) - np.array(line_MSEs2))
+        fingle = np.array(Diff_value < (1 - Confident) * np.max(Diff_value)) + 0
+        similar = fingle.reshape(1, -1)[0].tolist()
+        similar = sum(similar) / len(similar)
+
+        if similar == 0.0:
+            similar = 1
+        return similar

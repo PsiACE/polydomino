@@ -4,6 +4,7 @@ import math
 import cv2
 import imutils
 import numpy as np
+from skimage.feature import hog
 
 gray_level = 16
 
@@ -139,6 +140,9 @@ class ColorDescriptor:
         img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         moments = cv2.moments(img_gray)
         humoments = cv2.HuMoments(moments)
+        features = [x for j in humoments for x in j]
+        features = np.abs(np.log(np.abs(features)))
+        return features
         # img_gray=cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         # (row, col) = img_gray.shape
         # m00 = img_gray.sum()
@@ -185,8 +189,24 @@ class ColorDescriptor:
         #     * (3 * (n30 + n12) ** 2 - (n21 + n03) ** 2)
         # inv_m7 = [h1, h2, h3, h4, h5, h6, h7]
         # features = np.abs(np.log(np.abs(inv_m7)))
-        features = [x for j in humoments for x in j]
-        features = np.abs(np.log(np.abs(features)))
+
+    def ahash(self, image):
+        img = cv2.resize(image, (8, 8))
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        np_mean = np.mean(gray)
+        ahash_01 = (gray > np_mean) + 0
+        features = ahash_01.reshape(1, -1)[0].tolist()
+        return features
+
+    def phash(self, image):
+        img = cv2.resize(image, (32, 32))
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        dct = cv2.dct(np.float32(gray))
+        dct_roi = dct[0:8, 0:8]
+
+        avreage = np.mean(dct_roi)
+        phash_01 = (dct_roi > avreage) + 0
+        features = phash_01.reshape(1, -1)[0].tolist()
         return features
 
     def dhash(self, image):
@@ -203,6 +223,101 @@ class ColorDescriptor:
                 features[row * 8 + col] = a
 
         return features
+
+    def mse(self, image):
+        img = cv2.resize(image, (32, 32))
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        line_MSEs = []
+        for i in range(32):
+            avg = np.mean(gray[i, :])
+            line_MSE = np.square(gray[i, :] - avg)
+            line_MSEs.append(line_MSE)
+        features = features = [x for j in line_MSEs for x in j]
+        return features
+
+    def hog(self, image):
+        res_image = cv2.resize(image, (256, 256))
+        gray = res_image / 255
+        features = hog(
+            gray,
+            orientations=20,
+            pixels_per_cell=[20, 20],
+            cells_per_block=[10, 10],
+            visualize=False,
+            transform_sqrt=True,
+            block_norm="L2-Hys",
+        )
+        return features
+        # img = image/255
+        # g_img = np.zeros((img.shape[0],img.shape[1],3,2))
+        # for i in range(1,img.shape[0]-1):
+        #     for j in range(1,img.shape[1]-1):
+        #         gx_b = img[i+1,j,0] - img[i-1,j,0]
+        #         gy_b = img[i,j+1,0] - img[i,j-1,0]
+        #         gx_g = img[i+1,j,1] - img[i-1,j,1]
+        #         gy_g = img[i,j+1,1] - img[i,j-1,1]
+        #         gx_r = img[i+1,j,2] - img[i-1,j,2]
+        #         gy_r = img[i,j+1,2] - img[i,j-1,2]
+        #         gb = (gx_b**2 + gy_b**2)**0.5
+        #         gg = (gx_g**2 + gy_g**2)**0.5
+        #         gr = (gx_r**2 + gy_r**2)**0.5
+        #         if gx_b == 0 and gy_b == 0:
+        #             dgb = 0
+        #         elif gx_b == 0 and gy_b != 0:
+        #             dgb = math.pi/2
+        #         else:
+        #             dgb = math.atan(gy_b/gx_b)
+        #             if dgb < 0:
+        #                 dgb = dgb + math.pi
+        #         if gx_g == 0 and gy_g == 0:
+        #             dgg = 0
+        #         elif gx_g == 0 and gy_g != 0:
+        #             dgg = math.pi/2
+        #         else:
+        #             dgg = math.atan(gy_g/gx_g)
+        #             if dgg < 0:
+        #                 dgg = dgg + math.pi
+        #         if gx_r == 0 and gy_r == 0:
+        #             dgr = 0
+        #         elif gx_r == 0 and gy_r != 0:
+        #             dgr = math.pi/2
+        #         else:
+        #             dgr = math.atan(gy_r/gx_r)
+        #             if dgr < 0:
+        #                 dgr = dgr + math.pi
+        #         g_img[i,j,0,0] = gb
+        #         g_img[i,j,1,0] = gg
+        #         g_img[i,j,2,0] = gr
+        #         g_img[i,j,0,1] = dgb
+        #         g_img[i,j,1,1] = dgg
+        #         g_img[i,j,2,1] = dgr
+        # cell_n = np.zeros((3,9))
+        # h = 24
+        # w = 24
+        # h_size = img.shape[0]//24
+        # w_size = img.shape[1]//24
+
+        # cell = np.zeros((h,w,27))
+        # for m in range(h):
+        #     for n in range(w):
+        #         for i in range(h_size*m,h_size*(m+1)):
+        #             for j in range(w_size*n,w_size*(n+1)):
+        #                 for k in range(3):
+        #                     cell_n[k,int(g_img[i,j,k,1]//(math.pi/9))] += g_img[i,j,k,0]
+        #         cell[m,n] = cell_n.reshape(27)
+        # block = np.zeros((h//2,w//2,27))
+        # for p in range(h//2):
+        #     for q in range(w//2):
+        #         for i in range(2*p,2*p+2):
+        #             for j in range(2*q,2*q+2):
+        #                 block[p,q] += cell[i,j]
+        # block_norm = np.zeros((h//2,w//2,27))
+        # for i in range(h//2):
+        #     for j in range(w//2):
+        #         length = (np.linalg.norm(block[i,j])**2 + 0.000001)**0.5
+        #         block_norm[i,j] = block[i,j]/length
+        # block_norm = block_norm.reshape(block_norm.shape[0]*block_norm.shape[1],27)
+        # features = [x for j in block_norm for x in j]
 
     def histogram(self, image, mask):
         # extract a 3D color histogram from the masked region of the

@@ -44,8 +44,17 @@ for imagePath in glob.glob(args["dataset"] + "/*.jpg"):
         features = cd.gray_matrix(image)
     elif args["method"] == "humoments":
         features = cd.humoments(image)
+    elif args["method"] == "ahash":
+        features = cd.ahash(image)
+    elif args["method"] == "phash":
+        features = cd.phash(image)
     elif args["method"] == "dhash":
         features = cd.dhash(image)
+    elif args["method"] == "mse":
+        features = cd.mse(image)
+    elif args["method"] == "hog":
+        # img = cv2.resize(image,(192,192))
+        features = cd.hog(image)
     else:
         print("Sorry, we don't support this method.")
         exit(1)

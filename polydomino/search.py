@@ -36,8 +36,16 @@ elif args["features"] == "gray-matrix":
     features = cd.gray_matrix(query)
 elif args["features"] == "humoments":
     features = cd.humoments(query)
+elif args["features"] == "ahash":
+    features = cd.ahash(query)
+elif args["features"] == "phash":
+    features = cd.phash(query)
 elif args["features"] == "dhash":
     features = cd.dhash(query)
+elif args["features"] == "mse":
+    features = cd.mse(query)
+elif args["features"] == "hog":
+    features = cd.hog(query)
 else:
     print("Sorry, we don't support this method.")
     exit(1)
