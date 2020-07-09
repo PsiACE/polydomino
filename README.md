@@ -12,12 +12,14 @@ The goal is to implement a content-based image retrieval system that supports mu
 
 ## TODO
 
+- [ ] Refactor to rationalize code.
 - [ ] More reasonable work flow, minimize manual operation.
 - [ ] More effective search. 
-    - [ ] Support uploading files and randomly selecting pictures in the gallery.
+    - [x] Support uploading files 
+    - [ ] Randomly selecting pictures in the gallery.
     - [ ] Improve retrieval speed.
-    - [ ] Support more search methods.
-- [ ] Better UI.
+    - [x] Support more search methods.
+- [x] Better UI.
 - [ ] Access Control.
 - [ ] Others - Basic Guides. (?)
 
@@ -25,15 +27,19 @@ The goal is to implement a content-based image retrieval system that supports mu
 
 Since the project is not yet perfect, here is only an overview of the process rather than specific steps.
 
-1. Clone this repository.
-2. Put the images (**JPG Only**) into the dataset folder.
-3. Index pictures.
+1. Clone this repository. `git clone git@github.com:PsiACE/polydomino.git`
+2. Put the images (**JPG Only**) into the dataset folders.
+3. Index pictures. `python polydomino/index.py --dataset "dataset/*" --index mse.csv --method mse`
 4. Select pictures to search.
+
+    - For web, you should edit `.env` to choose algo. Then run `python polydomino/app.py`
+    - For cli, just one line like this `python polydomino/search.py --index polydomino/mse.csv --query 0007.jpg --features mse  --searcher mse`
 
 ## Features
 
-Feature extraction algorithms include: 3D-HSV Histogram, Color Moment, Gray Matrix, DHash, Hu Moment.
-Search algorithm based on statistical method: Euclidean Distance, Manhattan Distance, Hamming Distance, Cosine Similarity, Pearson Similarity, Spearman Similarity.
+Feature extraction algorithms include: 3D-HSV Histogram, Color Moments, Gray Matrix, dHash, Hu Moments, etc.
+
+Search algorithm based on statistical method: Euclidean Distance, Manhattan Distance, Hamming Distance, Cosine Similarity, Pearson Similarity, Spearman Similarity, etc.
 
 ## Contact
 
