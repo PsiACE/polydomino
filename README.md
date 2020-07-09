@@ -29,8 +29,9 @@ Since the project is not yet perfect, here is only an overview of the process ra
 
 1. Clone this repository. `git clone git@github.com:PsiACE/polydomino.git`
 2. Put the images (**JPG Only**) into the dataset folders.
-3. Index pictures. `python polydomino/index.py --dataset "dataset/*" --index mse.csv --method mse`
-4. Select pictures to search.
+3. Install dependencies. `pip install pipenv && pipenv install`
+4. Index pictures. `python polydomino/index.py --dataset "dataset/*" --index mse.csv --method mse`
+5. Select pictures to search.
 
     - For web, you should edit `.env` to choose algo. Then run `python polydomino/app.py`
     - For cli, just one line like this `python polydomino/search.py --index polydomino/mse.csv --query 0007.jpg --features mse  --searcher mse`
